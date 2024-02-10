@@ -12,5 +12,15 @@ services:
     volumes:
       - polls-pg-data:/bitnami/postgresql
 
+  redis:
+    image: bitnami/redis:latest
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'polls-redis-data:/bitnami/redis/data'
+
 volumes:
   polls-pg-data:
+  polls-redis-data:
