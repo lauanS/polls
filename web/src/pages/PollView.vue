@@ -1,24 +1,30 @@
 <template>
-  <h2>{{ poll.name }}</h2>
+  <h2>{{ loadingPoll ? 'Carregando...' : poll.title }}</h2>
 
-  <form>
-    <div v-for="option in poll.options" :key="option.name">
-      <button type="button">{{ option.name }}</button>
+  <form v-if="!loadingPoll">
+    <div v-for="option in poll.options" :key="option.title">
+      <button type="button">{{ option.title }}</button>
     </div>
   </form>
 </template>
 
 <script setup lang="ts">
-const poll = {
-  name: 'What is your favorite basic land type?',
-  options: [
-    { name: 'Swamp', score: 6 },
-    { name: 'Mountain', score: 5 },
-    { name: 'Forest', score: 10 },
-    { name: 'Plains', score: 2 },
-    { name: 'Island', score: 4 }
-  ]
+import { ref } from 'vue'
+import client from '@/services/api';
+import type { Poll } from '@/services/api'
+
+let poll: Poll;
+const loadingPoll = ref(false);
+
+const getPoll = async () => {
+  loadingPoll.value = true;
+
+  poll = await client.getPollRequest('444bcb78-7e04-4e49-973f-f61dc27adede');
+
+  loadingPoll.value = false;
 }
+
+getPoll();
 </script>
 
 <style scoped lang="scss">
@@ -49,5 +55,4 @@ button:active {
 div~div {
   margin-top: 20px;
 }
-
 </style>
