@@ -1,16 +1,19 @@
 import axios, { type AxiosResponse } from 'axios';
 
-export type Poll = {
-  title: string,
-  options: [{
-    title: string,
-    score: number
-  }]
-}
-
 type GetPollResponse = {
   votes: Record<string, string>
   poll: Poll
+}
+
+type PollOption = {
+  id: string,
+  title: string,
+  score: number
+}
+
+export type Poll = {
+  title: string,
+  options: [PollOption]
 }
 
 const client = axios.create({

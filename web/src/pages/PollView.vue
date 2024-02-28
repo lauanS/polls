@@ -3,7 +3,13 @@
 
   <form v-if="!loadingPoll">
     <div v-for="option in poll.options" :key="option.title">
-      <button type="button">{{ option.title }}</button>
+      <button
+        :class="option.id === selectedOptionId ? 'selected' : ''"
+        type="button"
+        @click="() => selectPollOption(option.id)"
+      >
+        {{ option.title }}
+      </button>
     </div>
   </form>
 </template>
@@ -15,14 +21,19 @@ import type { Poll } from '@/services/api'
 
 let poll: Poll;
 const loadingPoll = ref(false);
+const selectedOptionId = ref<undefined | string>(undefined);
 
-const getPoll = async () => {
+const getPoll = async (): Promise<void> => {
   loadingPoll.value = true;
 
   poll = await client.getPollRequest('444bcb78-7e04-4e49-973f-f61dc27adede');
 
   loadingPoll.value = false;
-}
+};
+
+const selectPollOption = (optionId: string): void => {
+  selectedOptionId.value = optionId;
+};
 
 getPoll();
 </script>
@@ -47,12 +58,11 @@ button:hover {
   border-color: $green-secondary;
 }
 
-button:active {
-  background-color: $blue-secondary;
-  border-color: $blue-secondary;
-}
-
 div~div {
   margin-top: 20px;
+}
+
+.selected {
+  background-color: $green-primary
 }
 </style>
