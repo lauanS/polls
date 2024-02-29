@@ -5,6 +5,11 @@ type GetPollResponse = {
   poll: Poll
 }
 
+type PostPollVoteParams = {
+  pollId: string,
+  pollOptionId: string
+}
+
 type PollOption = {
   id: string,
   title: string,
@@ -12,6 +17,7 @@ type PollOption = {
 }
 
 export type Poll = {
+  id: string,
   title: string,
   options: [PollOption]
 }
@@ -26,7 +32,11 @@ const getPollRequest = async (pollId: string): Promise<Poll> => {
   return response.data.poll;
 };
 
+const votePollRequest = async ({ pollId, pollOptionId }: PostPollVoteParams): Promise<void> => {
+  await client.post(`/poll/${pollId}/vote`, { pollOptionId })
+};
+
 export default {
-  client,
-  getPollRequest
+  getPollRequest,
+  votePollRequest
 }

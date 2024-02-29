@@ -1,15 +1,19 @@
 <template>
   <h2>{{ loadingPoll ? 'Carregando...' : poll.title }}</h2>
 
-  <form v-if="!loadingPoll">
+  <form v-if="!loadingPoll" :onsubmit="submitVote">
     <div v-for="option in poll.options" :key="option.title">
       <button
-        :class="option.id === selectedOptionId ? 'selected' : ''"
+        :class="option.id === selectedPollOptionId ? 'selected' : ''"
         type="button"
         @click="() => selectPollOption(option.id)"
       >
         {{ option.title }}
       </button>
+    </div>
+
+    <div class="submit">
+      <button type="submit">Vote</button>
     </div>
   </form>
 </template>
@@ -21,7 +25,7 @@ import type { Poll } from '@/services/api'
 
 let poll: Poll;
 const loadingPoll = ref(false);
-const selectedOptionId = ref<undefined | string>(undefined);
+const selectedPollOptionId = ref<undefined | string>(undefined);
 
 const getPoll = async (): Promise<void> => {
   loadingPoll.value = true;
@@ -31,8 +35,17 @@ const getPoll = async (): Promise<void> => {
   loadingPoll.value = false;
 };
 
+const submitVote = async (event: SubmitEvent): Promise<void> => {
+  event.preventDefault();
+
+  await client.votePollRequest({
+    pollId: poll.id,
+    pollOptionId: String(selectedPollOptionId.value)
+  });
+}
+
 const selectPollOption = (optionId: string): void => {
-  selectedOptionId.value = optionId;
+  selectedPollOptionId.value = optionId;
 };
 
 getPoll();
@@ -40,9 +53,13 @@ getPoll();
 
 <style scoped lang="scss">
 $green-primary: #D9ED92;
+$green-primary-darker: #CAE666;
 $green-secondary: #50B69A;
+$green-secondary-darker: #3E957D;
+
 $blue-primary: #184E77;
 $blue-secondary: #34A0A4;
+$blue-secondary-light: #92D9ED;
 $poll-white: #FAFAFA;
 
 button {
@@ -55,7 +72,7 @@ button {
 }
 
 button:hover {
-  border-color: $green-secondary;
+  border-color: $blue-secondary-light;
 }
 
 div~div {
@@ -63,6 +80,20 @@ div~div {
 }
 
 .selected {
-  background-color: $green-primary
+  background-color: $blue-secondary-light;
+  border-color: $blue-secondary-light;
+  color: white;
+}
+
+.submit {
+  button {
+    background-color: $green-secondary;
+    border: 2px solid $green-secondary;
+    color: white;
+  }
+
+  button:hover {
+    border-color: green-secondary-darker;
+  }
 }
 </style>
